@@ -1,3 +1,12 @@
+drop table if exists endpoints;
+drop table if exists pipelines cascade;
+drop table if exists stages cascade;
+drop table if exists employees cascade;
+drop table if exists organizations cascade;
+drop table if exists persons cascade;
+drop table if exists deals cascade;
+
+
 create table if not exists endpoints (
 	endpoint_id serial primary key,
 	endpoint_nme varchar(100) not null,

@@ -24,7 +24,7 @@ def execute_query(conn, query):
         print("Error: %s" % error)
         conn.rollback()
         cursor.close()
-        return 1
+        return -1
     
     # If this was a select query, return the result
     if 'select' in query.lower():
@@ -48,6 +48,5 @@ def execute_values(conn, df, table):
         print("Error: %s" % error)
         conn.rollback()
         cursor.close()
-        return 1
-    print("execute_values() done")
+        return -1
     cursor.close()
