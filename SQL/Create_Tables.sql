@@ -90,3 +90,30 @@ create table if not exists deals (
 	insert_dte date, -- add_time
 	update_dte date -- update_time
 );
+
+alter table deals
+	alter column deal_nme type varchar(250),
+	alter column lost_dsc type varchar(250)
+;
+
+-- create stub records to satisfy foreign key constraints
+insert into employees values (-1,'Stub Record','',True,current_date,current_date);
+
+insert into organizations values (-1,'',-1,'',True,current_date,current_date);
+
+insert into pipelines values
+	(-1,'Stub Record',-1,true,current_date,current_date);
+select * from pipelines;
+
+insert into stages values
+	(0,-1,'Stub Record',-1,false,-1,true,current_date,current_date);
+
+-- initialize endpoints table
+insert into endpoints (endpoint_nme, start_nbr, insert_dtm, update_dtm) values
+	('deals', 0, current_timestamp, current_timestamp),
+	('users', 0, current_timestamp, current_timestamp),
+	('organizations', 0, current_timestamp, current_timestamp),
+	('persons', 0, current_timestamp, current_timestamp),
+	('pipelines', 0, current_timestamp, current_timestamp),
+	('stages', 0, current_timestamp, current_timestamp)
+;
