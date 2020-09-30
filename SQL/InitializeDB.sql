@@ -11,7 +11,7 @@ create table if not exists endpoints (
 	endpoint_id serial primary key,
 	endpoint_nme varchar(100) not null,
 	start_nbr int,
-	insert_dtm date,
+	insert_dtm timestamp,
 	update_dtm timestamp
 );
 
@@ -21,8 +21,8 @@ create table if not exists pipelines (
 	pipeline_nme varchar(100) not null, -- name
 	order_nbr int, -- order_nr
 	active_ind boolean, -- active
-	insert_dte date, -- add_time
-	update_dte date -- update_time
+	insert_dtm timestamp, -- add_time
+	update_dtm timestamp -- update_time
 );
 
 -- endpoint = stages
@@ -34,8 +34,8 @@ create table if not exists stages (
 	rotten_ind boolean, -- rotten_flag
 	rotten_nbr int, -- rotten_days
 	active_ind boolean, -- active_flag
-	insert_dte date, -- add_time
-	update_dte date -- update_time
+	insert_dtm timestamp, -- add_time
+	update_dtm timestamp -- update_time
 );
 
 -- endpoint = users
@@ -44,8 +44,8 @@ create table if not exists employees (
 	full_nme varchar(100) not null, -- name
 	email_addr varchar(100), -- email
 	active_ind boolean, -- active_flag
-	insert_dte date, -- created
-	update_dte date -- modified
+	insert_dtm timestamp, -- created
+	update_dtm timestamp -- modified
 );
 
 -- endpoint = organizations
@@ -55,8 +55,8 @@ create table if not exists organizations (
 	owner_id int references employees (employee_id), -- owner_id.id
 	organization_addr varchar(100), -- address
 	active_ind boolean, -- active_flag
-	insert_dte date, -- add_time
-	update_dte date -- update_time
+	insert_dtm timestamp, -- add_time
+	update_dtm timestamp -- update_time
 );
 
 -- endpoint = persons
@@ -67,8 +67,8 @@ create table if not exists persons (
 	first_nme varchar(100), -- first_name
 	last_nme varchar(100), -- last_name
 	active_ind boolean, -- active_flag
-	insert_dte date, -- add_time
-	update_dte date -- update_time
+	insert_dtm timestamp, -- add_time
+	update_dtm timestamp -- update_time
 );
 
 -- endpoint = deals
@@ -78,35 +78,24 @@ create table if not exists deals (
 	owner_id int references employees (employee_id), -- user_id.id
 	organization_id int references organizations (organization_id), -- org_id.value
 	stage_id int references stages (stage_id), -- stage_id
-	deal_nme varchar(100), -- title
+	deal_nme varchar(250), -- title
 	deal_amt numeric(9,2), -- value
-	stagechange_dte date, -- stage_change_time
+	stagechange_dtm timestamp, -- stage_change_time
 	status_dsc varchar(100), -- status
-	status_dte date, -- coalesce(won_time, lost_time, close_time)
-	lost_dsc varchar(100), -- lost_reason
+	close_dtm timestamp, -- close_time
+	lost_dsc varchar(250), -- lost_reason
 	email_cnt int, -- email_messages_count
 	activity_cnt int, -- activities_count
 	active_ind boolean, -- active
-	insert_dte date, -- add_time
-	update_dte date -- update_time
+	insert_dtm timestamp, -- add_time
+	update_dtm timestamp -- update_time
 );
 
-alter table deals
-	alter column deal_nme type varchar(250),
-	alter column lost_dsc type varchar(250)
-;
-
 -- create stub records to satisfy foreign key constraints
-insert into employees values (-1,'Stub Record','',True,current_date,current_date);
-
-insert into organizations values (-1,'',-1,'',True,current_date,current_date);
-
-insert into pipelines values
-	(-1,'Stub Record',-1,true,current_date,current_date);
-select * from pipelines;
-
-insert into stages values
-	(0,-1,'Stub Record',-1,false,-1,true,current_date,current_date);
+insert into employees values (-1,'Stub Record','',True,current_timestamp,current_timestamp);
+insert into organizations values (-1,'',-1,'',True,current_timestamp,current_timestamp);
+insert into pipelines values (-1,'Stub Record',-1,true,current_timestamp,current_timestamp);
+insert into stages values (0,-1,'Stub Record',-1,false,-1,true,current_timestamp,current_timestamp);
 
 -- initialize endpoints table
 insert into endpoints (endpoint_nme, start_nbr, insert_dtm, update_dtm) values
