@@ -1,4 +1,5 @@
 import pandas as pd
+import pickle
 
 def to_date(data):
     
@@ -35,3 +36,14 @@ def fill_missing(data):
         data[col].fillna('1900-01-01', inplace=True)
     
     return data
+
+def write_dict(filename, dictionary):
+    file = open(filename,'wb')
+    pickle.dump(dictionary, file)
+    file.close()
+
+def read_dict(filename):
+    file = open(filename,'rb')
+    out = pickle.load(file)
+    file.close()
+    return out

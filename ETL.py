@@ -13,14 +13,7 @@ data_path = (os.getcwd() + "/Data/")
 # connection to Postgres database
 conn = db.connect()
 
-JSON_KEEPS = {
-    'pipelines':['id','name','order_nr','active','add_time','update_time'],
-    'stages':['id','order_nr','name','pipeline_id','rotten_flag','rotten_days','active_flag','add_time','update_time'],
-    'users':['id','name','email','active_flag','created','modified'],
-    'organizations':['id','name','owner_id.id','address','active_flag','add_time','update_time'],
-    'persons':['id','owner_id.id','org_id','first_name','last_name','active_flag','add_time','update_time'],
-    'deals':['id','creator_user_id.id','user_id.id','org_id.value','stage_id','title','value','stage_change_time','status','close_time','lost_reason','email_messages_count','activities_count','active','add_time','update_time']
-}
+JSON_KEYS = read_dict('pipe_keys.pkl')
 
 def get_data(endpoint, start, limit):
     
@@ -49,11 +42,11 @@ def get_data(endpoint, start, limit):
     
     return data, next_start
 
-def json_to_df(json_data, json_keeps, df_rename):
+def json_to_df(json_data, json_keys, df_rename):
     
-    data = pd.json_normalize(json_data)[json_keeps]
+    data = pd.json_normalize(json_data)[json_keys]
     
-    data.rename(columns=dict(zip(json_keeps, df_rename)), inplace=True)
+    data.rename(columns=dict(zip(json_keys, df_rename)), inplace=True)
     
     data = fill_missing(data)
     data = to_date(data)
@@ -69,7 +62,7 @@ def etl(endpoint, limit=500):
     returns output message for failure/success
     """
     
-    if endpoint not in [*JSON_KEEPS]:
+    if endpoint not in [*JSON_KEYS]:
         print('{} is not a valid endpoint. Please try again.'.format(endpoint))
         return False
     
@@ -93,7 +86,7 @@ def etl(endpoint, limit=500):
     
     data = json_to_df(
         json_data, # json data
-        JSON_KEEPS[endpoint], # data names from json
+        JSON_KEYS[endpoint], # data names from json
         name_updates # new column names for df
     )
     
@@ -136,7 +129,7 @@ def get_missing_data(endpoint):
     for i in ids:
         data = data.append(json_to_df(
             get_data('{endpoint}/{id}'.format(endpoint=endpoint, id=i[0]),0,10)[0],
-            JSON_KEEPS[endpoint],
+            JSON_KEYS[endpoint],
             name_updates
         ), ignore_index=True)
     
@@ -149,7 +142,7 @@ def get_missing_data(endpoint):
     return True
 
 if __name__ == '__main__':
-    for endpoint in [*JSON_KEEPS]:
+    for endpoint in [*JSON_KEYS]:
         continue_load = True
 
         # API -> Postgres until no new data
